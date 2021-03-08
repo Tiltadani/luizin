@@ -7,7 +7,7 @@ bot.on('message', msg => {
     console.log(msg.content);
 
     if (msg.content === "oi") {
-        msg.reply("Opa fala tu mano, desculpa pelo vácuo, como cê tá?");
+        msg.reply("Que foi mané?");
     }
 })
 
