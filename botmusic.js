@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
-const ytdl = require('ytdl-core');
-const streamOptions = {seek: 0, volume: 1};
+const commandsReader = require('./scripts/commandsReader');
+const config = require('./config.json');
 
 require('dotenv').config();
 
@@ -14,21 +14,21 @@ bot.on('ready', () => {
 bot.on('message', async msg => {
   if (!msg.guild) return;
   if (msg.author.bot) return;
-  
-  if (msg.content.toLowerCase().startsWith('+play')) {
-    if (!msg.member.voice.channel) {
-      msg.reply('Você precisa entrar em um canal de voz para poder usar o bot!');
+
+  if (msg.content.split('')[0] === config.prefix) {
+    const userCommand = msg.content.split(' ')[0];
+
+    const commands = await commandsReader(config.prefix);
+
+    if (!commands[userCommand]) {
+      msg.reply(`o comando ${userCommand} não existe!`);
       return;
     }
 
-    const connection = await msg.member.voice.channel.join();
+    commands[userCommand](msg);
+  }
 
-    const stream = ytdl('https://youtu.be/-QdZ2VtOkhc', { filter: 'audioonly'});
-    const DJ = connection.play(stream, streamOptions);
-
-    DJ.on('end', end => {
-      VoiceChannel.leave();
-    });
-
+  if (msg.content === 'oi') {
+    msg.reply('oi cara de boi');
   }
 });
