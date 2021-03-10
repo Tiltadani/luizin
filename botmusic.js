@@ -12,33 +12,23 @@ bot.on('ready', () => {
 });
 
 bot.on('message', async msg => {
-  if (!message.guild) return;
+  if (!msg.guild) return;
   if (msg.author.bot) return;
   
   if (msg.content.toLowerCase().startsWith('+play')) {
-    let VoiceChannel = msg.guild.channels.cache.find(channel => channel.id === '781668341953069087');
-    
-    console.log(VoiceChannel);
-
-    if (VoiceChannel == null) {
-      console.log('Canal não foi encontrado');
+    if (!msg.member.voice.channel) {
+      msg.reply('Você precisa entrar em um canal de voz para poder usar o bot!');
+      return;
     }
 
-    if (VoiceChannel !== null) {
-      console.log('O Canal foi encontrado');
+    const connection = await msg.member.voice.channel.join();
 
-      VoiceChannel.join()
-        .then(connection => {
-          const stream = ytdl('https://youtu.be/-QdZ2VtOkhc', { filter: 'audioonly'});
+    const stream = ytdl('https://youtu.be/-QdZ2VtOkhc', { filter: 'audioonly'});
+    const DJ = connection.play(stream, streamOptions);
 
-          const DJ = connection.play(stream, streamOptions);
-          
-          DJ.on('end', end => {
-            VoiceChannel.leave();
-          });
-        })
-        .catch(console.error);
-    }
+    DJ.on('end', end => {
+      VoiceChannel.leave();
+    });
 
   }
 });
